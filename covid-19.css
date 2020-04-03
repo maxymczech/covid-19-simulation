@@ -1,0 +1,31 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+canvas {
+  background-color: #000;
+  display: block;
+}
+#control-panel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 0;
+  opacity: 0.3;
+  transition: all .3s;
+}
+#control-panel:hover {
+  opacity: 1;
+}
+#control-panel button {
+  font-size: 14px;
+}
+#status-bar {
+  background-color: rgba(255, 255, 255, 0.5);
+  width: 100%;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 5px;
+  box-sizing: border-box;
+}
