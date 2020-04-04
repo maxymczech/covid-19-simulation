@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <title>Infection Game Test Jopta</title>
   <link rel="stylesheet" href="covid-19.css">
 </head>
 <body>
+
   <canvas id="the-canvas" width="500" height="500">
     Your browser does not support canvas element jopta
   </canvas>
+
   <div id="control-panel">
     <button onclick="killRandomPerson()">Kill 1</button>
     <button onclick="infectRandomPerson()">Infect 1</button>
@@ -15,11 +18,14 @@
     <button onclick="pauseSimulation()">Pause</button>
     <button onclick="resumeSimulation()">Resume</button>
   </div> <!-- #control-panel -->
+
   <div id="status-bar">
     Healthy: <span id="counter-healthy"></span>
     Sick: <span id="counter-sick"></span>
     Dead: <span id="counter-dead"></span>
   </div> <!-- #status-bar -->
+
   <script src="./covid-19.js"></script>
+
 </body>
 </html>

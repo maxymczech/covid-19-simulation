@@ -1,16 +1,17 @@
 /* * * Settings * * */
-const totalPeople = 20;
-const sicknessDuration = 1000;
-const initialSicknessDuration = Math.round(sicknessDuration * 0.3);
-const hardcoreModeP = 0.4;
-const hardcoreRIP = 0.5;
-
-let currentFrame = 0;
-let simulationState = 'running';
+const config = {
+  allSicknessStates: ['initial', 'light', 'hardcore', 'immunity'],
+  allStatuses: ['healthy', 'sick', 'dead'],
+  currentFrame: 0,
+  hardcoreModeProbability: 0.4, // Probability of going into hardcore sickness mode
+  hardcoreRIP: 0.5, // Probability of DEATH in hardcore sick people
+  initialSicknessDurationRatio: 0.3, // Portion of sickness period when the person is symptomless
+  sicknessDuration: 1000, // Number of frames the person is sick
+  simulationState: 'running', // 'running' | 'paused'
+  totalPeople: 20
+};
 
 const people = [];
-const statuses = ['healthy', 'sick', 'dead'];
-const sicknessStates = ['initial', 'light', 'hardcore', 'immunity'];
 
 /* * * Methods * * */
 
@@ -74,7 +75,7 @@ const dist = (a, b) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)
 
 const infectPerson = person => {
   person.status = 'sick';
-  person.sicknessStartFrame = currentFrame;
+  person.sicknessStartFrame = config.currentFrame;
   person.sicknessState = 'initial';
 };
 
@@ -135,20 +136,20 @@ const updateSimulationState = (people, maxWidth, maxHeight) => {
     }
   });
 
-  statuses.forEach(status => {
+  config.allStatuses.forEach(status => {
     const displayElement = document.getElementById(`counter-${status}`);
     displayElement.innerHTML = people.filter(person => person.status === status).length;
   });
 }
 
 const pauseSimulation = () => {
-  simulationState = 'paused';
+  config.simulationState = 'paused';
 }
 const resumeSimulation = () => {
-  simulationState = 'running';
+  config.simulationState = 'running';
 }
 
-/* * * * * */
+/* * * Run simulation loop * * */
 
 const canvasElement = document.getElementById('the-canvas');
 canvasElement.width = document.documentElement.clientWidth;
@@ -156,17 +157,17 @@ canvasElement.height = document.documentElement.clientHeight;
 const ctx = canvasElement.getContext("2d");
 const { height: canvasHeight, width: canvasWidth } = canvasElement;
 
-for (let i = 0; i < totalPeople; i++) {
+for (let i = 0; i < config.totalPeople; i++) {
   people.push(getRandomPerson(canvasWidth, canvasHeight));
 }
 
 const updateEvery = 1;
 const simulationLoop = () => {
-  if (simulationState === 'running') {
+  if (config.simulationState === 'running') {
     updateSimulationState(people, canvasWidth, canvasHeight);
 
-    currentFrame++;
-    if (currentFrame % updateEvery === 0) {
+    config.currentFrame++;
+    if (config.currentFrame % updateEvery === 0) {
       drawFrame(ctx, canvasWidth, canvasHeight);
     }
   }
