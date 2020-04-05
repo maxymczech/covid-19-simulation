@@ -3,8 +3,12 @@ html, body {
   padding: 0;
 }
 canvas {
-  background-color: #000;
   display: block;
+}
+#canvas-simulation {
+  background-color: #000;
+}
+#canvas-graph {
 }
 #control-panel {
   position: absolute;
@@ -29,3 +33,11 @@ canvas {
   padding: 5px;
   box-sizing: border-box;
 }
+.covid-19-container {
+  display: flex;
+  flex-direction: row;
+}
+.covid-19-item {
+  width: 50%;
+}
+

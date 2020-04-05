@@ -7,24 +7,34 @@
 </head>
 <body>
 
-  <canvas id="the-canvas" width="500" height="500">
-    Your browser does not support canvas element jopta
-  </canvas>
+  <div class="covid-19-container">
+    <div class="covid-19-item">
+      <canvas id="canvas-simulation" width="500" height="500">
+        Your browser does not support canvas element jopta
+      </canvas>
 
-  <div id="control-panel">
-    <button onclick="killRandomPerson()">Kill 1</button>
-    <button onclick="infectRandomPerson()">Infect 1</button>
-    <button onclick="infectProb(parseFloat(prompt('P=')))">Infect P</button>
-    <button onclick="pauseSimulation()">Pause</button>
-    <button onclick="resumeSimulation()">Resume</button>
-  </div> <!-- #control-panel -->
+      <div id="control-panel">
+        <button onclick="killRandomPerson()">Kill 1</button>
+        <button onclick="infectRandomPerson()">Infect 1</button>
+        <button onclick="infectProb(parseFloat(prompt('P=')))">Infect P</button>
+        <button onclick="pauseSimulation()">Pause</button>
+        <button onclick="resumeSimulation()">Resume</button>
+      </div> <!-- #control-panel -->
 
-  <div id="status-bar">
-    Healthy: <span id="counter-healthy"></span> (Immune: <span id="counter-immune"></span>)
-    Sick: <span id="counter-sick"></span>
-    Dead: <span id="counter-dead"></span>
-  </div> <!-- #status-bar -->
+      <div id="status-bar">
+        Healthy: <span id="counter-healthy"></span> (Immune: <span id="counter-immune"></span>)
+        Sick: <span id="counter-sick"></span>
+        Dead: <span id="counter-dead"></span>
+      </div> <!-- #status-bar -->
+    </div> <!-- .covid-19-item -->
+    <div class="covid-19-item">
+      <canvas id="canvas-graph" width="500" height="500">
+        Your browser does not support canvas element jopta
+      </canvas>
+    </div> <!-- .covid-19-item -->
+  </div> <!-- .covid-19-container -->
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
   <script src="./covid-19.js"></script>
 
 </body>
