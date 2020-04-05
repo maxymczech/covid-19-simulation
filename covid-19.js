@@ -5,10 +5,12 @@ const config = {
   currentFrame: 0,
   hardcoreModeProbability: 0.4, // Probability of going into hardcore sickness mode
   hardcoreRIP: 0.5, // Probability of DEATH in hardcore sick people
+  infectionP: 0.1, // Probability of infecting another person without immunity
+  infectionRadius: 20, // Radius of infection reach
   initialSicknessDurationRatio: 0.3, // Portion of sickness period when the person is symptomless
-  sicknessDuration: 1000, // Number of frames the person is sick
+  sicknessDuration: 500, // Number of frames the person is sick
   simulationState: 'running', // 'running' | 'paused'
-  totalPeople: 20
+  totalPeople: 200
 };
 
 const people = [];
@@ -48,8 +50,8 @@ const drawFrame = (ctx, maxWidth, maxHeight) => {
       'immunity': '#C5F4E0'
     },
     'sick': {
-      'initial': 'orange',
-      'light': 'pink',
+      'initial': 'pink',
+      'light': 'orange',
       'hardcore': 'red',
       'immunity': 'blue'
     },
@@ -64,9 +66,13 @@ const drawFrame = (ctx, maxWidth, maxHeight) => {
   ctx.clearRect(0, 0, maxWidth, maxHeight);
 
   people.forEach(person => {
-    drawCircle(ctx, person.x, person.y, person.radius, colorDict[person.status][person.sicknessState]);
+    const color = colorDict[person.status][person.sicknessState];
+    if (person.status === 'sick') {
+      drawCircle(ctx, person.x, person.y, config.infectionRadius, color, false);
+    }
+    drawCircle(ctx, person.x, person.y, person.radius, color);
     if (person.sicknessState === 'immunity') {
-      drawCircle(ctx, person.x, person.y, person.radius + 4, colorDict[person.status][person.sicknessState], false);
+      drawCircle(ctx, person.x, person.y, person.radius + 4, color, false);
     }
   });
 }
@@ -110,10 +116,7 @@ const updateSimulationState = (people, maxWidth, maxHeight) => {
   const goalTolerance = 3;
   people.forEach(person => {
     if (person.status !== 'dead') {
-      const distanceToGoal = dist({
-        x: person.x,
-        y: person.y
-      }, {
+      const distanceToGoal = dist(person, {
         x: person.goalX,
         y: person.goalY
       });
@@ -122,8 +125,8 @@ const updateSimulationState = (people, maxWidth, maxHeight) => {
         person.goalY = randomInt(person.radius, maxHeight - person.radius);
       } else {
         const dir = {
-          x: person.speed * (person.goalX - person.x) / distanceToGoal,
-          y: person.speed * (person.goalY - person.y) / distanceToGoal
+          x: Math.min(person.speed, distanceToGoal) * (person.goalX - person.x) / distanceToGoal,
+          y: Math.min(person.speed, distanceToGoal) * (person.goalY - person.y) / distanceToGoal
         }
         person.x += dir.x;
         person.y += dir.y;
@@ -132,7 +135,38 @@ const updateSimulationState = (people, maxWidth, maxHeight) => {
 
     // Samoe interesnoe jopta!!!
     if (person.status === 'sick') {
-      // TODO
+      // Course of the disease
+      const sickForFrames = config.currentFrame - person.sicknessStartFrame;
+      const symptomlessFrames = Math.round(config.initialSicknessDurationRatio * config.sicknessDuration);
+      if (sickForFrames >= config.sicknessDuration) {
+        if (person.sicknessState === 'light') {
+          person.status = 'healthy';
+          person.sicknessState = 'immunity';
+        } else if (person.sicknessState === 'hardcore') {
+          if (Math.random() < config.hardcoreRIP) {
+            person.status = 'dead';
+          } else {
+            person.status = 'healthy';
+            person.sicknessState = 'immunity';
+          }
+        }
+      } else if(sickForFrames >= symptomlessFrames && person.sicknessState === 'initial') {
+        person.sicknessState = Math.random() < config.hardcoreModeProbability ? 'hardcore' : 'light';
+      }
+
+      // Infection spread
+      const infectablePeople = people.filter(person => (
+        person.status === 'healthy' && person.sicknessState !== 'immunity'
+      ));
+      infectablePeople.forEach(otherPerson => {
+        if (
+          dist(person, otherPerson) <= config.infectionRadius
+          &&
+          Math.random() < config.infectionP
+        ) {
+          infectPerson(otherPerson);
+        }
+      });
     }
   });
 
@@ -140,6 +174,9 @@ const updateSimulationState = (people, maxWidth, maxHeight) => {
     const displayElement = document.getElementById(`counter-${status}`);
     displayElement.innerHTML = people.filter(person => person.status === status).length;
   });
+  const displayElement = document.getElementById('counter-immune');
+  displayElement.innerHTML = people.filter(person => person.status === 'healthy' && person.sicknessState === 'immunity').length;
+  
 }
 
 const pauseSimulation = () => {
